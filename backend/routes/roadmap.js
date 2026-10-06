@@ -35,7 +35,7 @@ Include 4 phases and 5-6 resources. Focus on Indian job market and free/affordab
   try {
     const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const response = await client.chat.completions.create({
-      model: "llama-3.1-70b-versatile",
+      model: "llama-3.3-70b-versatile",
       messages: [
         { role: "system", content: "You are a career guidance expert. Return only valid JSON, no markdown." },
         { role: "user", content: prompt },
