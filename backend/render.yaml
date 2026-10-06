@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: pathai-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: GROQ_API_KEY
+        sync: false          # Set this manually in Render dashboard
+      - key: ALLOWED_ORIGIN
+        sync: false          # Set to your Vercel frontend URL, e.g. https://pathai.vercel.app
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
