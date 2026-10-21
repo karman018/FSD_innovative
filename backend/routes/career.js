@@ -1,7 +1,10 @@
 const express = require("express");
-const router = express.Router();
+const router  = express.Router();
+const axios   = require("axios");
 const { predictCareers } = require("../predictor");
 const db = require("../config/db");
+
+const ML_API_URL = process.env.ML_API_URL || null;
 
 // POST /api/predict-career
 router.post("/predict-career", async (req, res) => {
@@ -23,8 +26,21 @@ router.post("/predict-career", async (req, res) => {
     if (profile.tenth_percentage === "") profile.tenth_percentage = null;
     if (profile.twelfth_percentage === "") profile.twelfth_percentage = null;
 
-    // Run prediction
-    const result = predictCareers(profile);
+    // ── Use ML model if available, else fallback to rule-based ───────────────
+    let result;
+    if (ML_API_URL) {
+      try {
+        const mlRes = await axios.post(`${ML_API_URL}/predict`, profile, { timeout: 8000 });
+        result = mlRes.data;
+        console.log("✅ Prediction from ML model");
+      } catch (mlErr) {
+        console.warn("⚠️ ML API failed, using rule-based fallback:", mlErr.message);
+        result = predictCareers(profile);
+      }
+    } else {
+      result = predictCareers(profile);
+      console.log("ℹ️ Prediction from rule-based engine (ML_API_URL not set)");
+    }
 
     // Save to MySQL
     await db.query(
